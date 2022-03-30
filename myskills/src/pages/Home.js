@@ -1,30 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput, //para imputar dados
   Platform, //avalia em qual S.O. está sendo executado
-  TouchableOpacity //elemente de clique transparente
+  FlatList, //recomendado para listas devido a performance
+  StatusBar 
 } from 'react-native';
+import { Button } from '../components/Button';
+import { SkillCard } from '../components/SkillCard';
 
 export function Home(){
   //useState retorna um array com duas posições
   const [newSkill, setNewSkill] = useState('');
   //cria um array de habilidades
   const [mySkill, setMySkill] = useState([]);
+  const [gretting, setGretting] = useState('');
 
   //função para adicionar uma nova habilidade
   //por conversão, usar o handle nonme da função sempre que a ação seja disparada por um clique do usuário
   function handleAddNewSkill(){
     //... é o operador spread que faz com que o array seja copiado
-    setMySkill(oldSkills => [...oldSkills, newSkill])
+    setMySkill(oldSkills => [...oldSkills, newSkill]);
   }
+
+  //recebe dois parâmetros, uma função e um array
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+
+    if(currentHour < 12){
+      setGretting('Good morning');
+    } else if(currentHour >= 12 && currentHour < 18){
+      setGretting('Good afternoon');
+    } else {
+      setGretting('Good night');
+    }
+  }, [])
 
   return(
     <View style={styles.container}>
       <Text style={styles.title}>
         Bem-vindo, Edésio.
+      </Text>
+
+      <Text style={{}}>
+        {gretting}
       </Text>
 
       <TextInput
@@ -33,30 +54,26 @@ export function Home(){
         placeholderTextColor="#555"
         onChangeText={setNewSkill}
       />
-
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={.7}
-        onPress={handleAddNewSkill}
-      >
-        <Text style={styles.buttonText}>Add</Text>
-      </TouchableOpacity>
+      
+      <Button onPress={handleAddNewSkill} />
 
       <Text
         style={[styles.title, { marginVertical: 50 }]} >
         My Skills
       </Text>
 
-      {/* Usar chaves neste local significa mesclar código JavaScript com .JSX  */}
-      {
-        mySkyll.map(skill => (
-          <TouchableOpacity key={skill} style={styles.buttonSkill}>
-            <Text style={styles.textSkill}>
-              {skill}
-            </Text>
-          </TouchableOpacity>
-        ))
-      }
+      {/* FlatLit
+        // recomendado para listas devido a performance
+        // substitui o map
+        // necessario passar um array como parametro
+      */}
+      <FlatList
+        data={mySkill} //array de dados
+        keyExtractor={item => item} //função para identificar cada item
+        renderItem={({ item }) => ( //função para renderizar cada item
+          <SkillCard skill={item} />
+        )}
+      />
 
     </View>
   )
@@ -81,29 +98,5 @@ const styles = StyleSheet.create({
       padding: Platform.OS === 'ios' ? 15 : 10,
       marginTop: 30,
       borderRadius: 7
-    },
-    button: {
-      backgroundColor: '#A370F7',
-      padding: 15,
-      borderRadius: 7,
-      alignItems: 'center',
-      marginTop: 20
-    },
-    buttonText: {
-      color: '#FFF',
-      fontSize: 17,
-      fontWeight: 'bold'
-    },
-    buttonSkill: {
-      backgroundColor: '#1F1E25',
-      padding: 15,
-      borderRadius: 50,
-      alignItems: 'center',
-      marginVertical: 10
-    },
-    textSkill: {
-      color: '#FFF',
-      fontSize: 22,
-      fontWeight: 'bold'
     }
 });
