@@ -14,7 +14,6 @@ export function Button({ onPress }){
         >
             <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
-
     )
 }
 

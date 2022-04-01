@@ -5,24 +5,33 @@ import {
   StyleSheet,
   TextInput, //para imputar dados
   Platform, //avalia em qual S.O. está sendo executado
-  FlatList, //recomendado para listas devido a performance
-  StatusBar 
+  FlatList //recomendado para listas devido a performance
 } from 'react-native';
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
+
+// interface usada para definir o tipo de dados que será passado para a função
+interface SkillData {
+  id: string;
+  name: string;
+}
 
 export function Home(){
   //useState retorna um array com duas posições
   const [newSkill, setNewSkill] = useState('');
   //cria um array de habilidades
-  const [mySkill, setMySkill] = useState([]);
+  const [mySkill, setMySkill] = useState<SkillData[]>([]);
   const [gretting, setGretting] = useState('');
 
   //função para adicionar uma nova habilidade
   //por conversão, usar o handle nonme da função sempre que a ação seja disparada por um clique do usuário
   function handleAddNewSkill(){
+    const data = {
+      id: String(new Date().getTime()),
+      name: newSkill
+    }
     //... é o operador spread que faz com que o array seja copiado
-    setMySkill(oldSkills => [...oldSkills, newSkill]);
+    setMySkill(oldSkills => [...oldSkills, data]);
   }
 
   //recebe dois parâmetros, uma função e um array
@@ -69,9 +78,9 @@ export function Home(){
       */}
       <FlatList
         data={mySkill} //array de dados
-        keyExtractor={item => item} //função para identificar cada item
+        keyExtractor={item => item.id} //função para identificar cada item
         renderItem={({ item }) => ( //função para renderizar cada item
-          <SkillCard skill={item} />
+          <SkillCard skill={item.name} />
         )}
       />
 
